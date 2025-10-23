@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}অফার - আমার ফ্রেশ বিডি{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-orange-400 to-red-500 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold mb-4">বিশেষ অফার</h1>
+        <p class="text-xl opacity-90">সেরা দামে সেরা পণ্য</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Special Offers Banner -->
+  {% if special_offers %}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for offer in special_offers %}
+      <div class="relative overflow-hidden rounded-xl {{ offer.background_color|default:'bg-gradient-to-r from-orange-400 to-red-500' }} text-white p-8">
+        <div class="relative z-10">
+          <h3 class="text-2xl font-bold mb-2">{{ offer.title }}</h3>
+          {% if offer.subtitle %}
+          <p class="text-lg opacity-90 mb-4">{{ offer.subtitle }}</p>
+          {% endif %}
+          {% if offer.discount_percentage %}
+          <div class="text-4xl font-bold mb-4">{{ offer.discount_percentage }}% ছাড়</div>
+          {% endif %}
+          {% if offer.description %}
+          <p class="mb-6 opacity-80">{{ offer.description }}</p>
+          {% endif %}
+          {% if offer.button_link %}
+          <a href="{{ offer.button_link }}" class="inline-block bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+            {{ offer.button_text|default:'এখনই কিনুন' }}
+          </a>
+          {% endif %}
+        </div>
+        <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -mr-16 -mt-16"></div>
+        <div class="absolute bottom-0 left-0 w-24 h-24 bg-white bg-opacity-10 rounded-full -ml-12 -mb-12"></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Active Coupons -->
+  {% if active_coupons %}
+  <div class="bg-gray-50 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">কুপন কোড</h2>
+        <p class="text-lg text-gray-600">এই কুপন কোডগুলো ব্যবহার করে আরও ছাড় পান</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for coupon in active_coupons %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-primary">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-primary text-white px-3 py-1 rounded-full text-sm font-semibold">
+                {{ coupon.code }}
+              </div>
+              <div class="text-2xl font-bold text-primary">
+                {% if coupon.discount_type == 'percentage' %}
+                  {{ coupon.discount_value }}%
+                {% else %}
+                  ৳{{ coupon.discount_value }}
+                {% endif %}
+              </div>
+            </div>
+            
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              {% if coupon.discount_type == 'percentage' %}
+                {{ coupon.discount_value }}% ছাড় পান
+              {% else %}
+                ৳{{ coupon.discount_value }} ছাড় পান
+              {% endif %}
+            </h3>
+            
+            <div class="text-sm text-gray-600 space-y-1">
+              {% if coupon.minimum_amount > 0 %}
+              <p>• ন্যূনতম অর্ডার: ৳{{ coupon.minimum_amount }}</p>
+              {% endif %}
+              {% if coupon.maximum_discount %}
+              <p>• সর্বোচ্চ ছাড়: ৳{{ coupon.maximum_discount }}</p>
+              {% endif %}
+              <p>• মেয়াদ: {{ coupon.valid_to|date:"d M Y" }} পর্যন্ত</p>
+              {% if coupon.usage_limit %}
+              <p>• ব্যবহার সীমা: {{ coupon.used_count }}/{{ coupon.usage_limit }}</p>
+              {% endif %}
+            </div>
+            
+            <button onclick="copyCouponCode('{{ coupon.code }}')" 
+                    class="mt-4 w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-primary-dark transition">
+              কোড কপি করুন
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Promotions -->
+  {% if promotions %}
+  <div class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">চলমান প্রমোশন</h2>
+        <p class="text-lg text-gray-600">বিশেষ প্রমোশনাল অফার</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for promotion in promotions %}
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+          {% if promotion.image %}
+          <img src="{{ promotion.image.url }}" alt="{{ promotion.title }}" class="w-full h-48 object-cover">
+          {% endif %}
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ promotion.title }}</h3>
+            <p class="text-gray-600 mb-4">{{ promotion.description }}</p>
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+              <span>শুরু: {{ promotion.start_date|date:"d M Y" }}</span>
+              <span>শেষ: {{ promotion.end_date|date:"d M Y" }}</span>
+            </div>
+            {% if promotion.link_url %}
+            <a href="{{ promotion.link_url }}" class="block w-full bg-primary text-white text-center py-3 rounded-lg font-medium hover:bg-primary-dark transition">
+              বিস্তারিত দেখুন
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Discounted Products -->
+  {% if discounted_products %}
+  <div class="bg-gray-50 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">ছাড়ের পণ্য</h2>
+        <p class="text-lg text-gray-600">বিশেষ ছাড়ে পণ্য কিনুন</p>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {% for product in discounted_products %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition group">
+          <div class="relative">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+            {% else %}
+              <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+            {% endif %}
+            {% if product.is_on_sale %}
+            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+              {{ product.sale_percentage }}% ছাড়
+            </div>
+            {% endif %}
+            <button onclick="quickView({{ product.id }})" class="absolute top-2 right-2 bg-white text-gray-600 p-2 rounded-full shadow-md hover:bg-gray-50 transition opacity-0 group-hover:opacity-100">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="p-4">
+            <h3 class="text-sm font-medium text-gray-900 mb-2 line-clamp-2">{{ product.name }}</h3>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                {% if product.is_on_sale %}
+                  <span class="text-lg font-bold text-primary">৳{{ product.discount_price }}</span>
+                  <span class="text-sm text-gray-500 line-through">৳{{ product.price }}</span>
+                {% else %}
+                  <span class="text-lg font-bold text-primary">৳{{ product.price }}</span>
+                {% endif %}
+              </div>
+            </div>
+            
+            <button onclick="addToCart({{ product.id }}, 1)" 
+                    class="w-full bg-primary text-white py-2 rounded-lg text-sm font-medium hover:bg-primary-dark transition">
+              কার্টে যোগ করুন
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      <div class="text-center mt-8">
+        <a href="{% url 'product_list' %}" class="inline-block bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-primary-dark transition">
+          আরও পণ্য দেখুন
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Newsletter Signup -->
+  <div class="bg-primary py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">অফার আপডেট পান</h2>
+      <p class="text-xl text-white opacity-90 mb-8">নতুন অফার এবং ছাড়ের খবর সবার আগে পেতে সাবস্ক্রাইব করুন</p>
+      
+      <form class="max-w-md mx-auto flex">
+        <input type="email" placeholder="আপনার ইমেইল ঠিকানা" 
+               class="flex-1 px-4 py-3 rounded-l-lg border-0 focus:outline-none focus:ring-2 focus:ring-white">
+        <button type="submit" class="bg-white text-primary px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 transition">
+          সাবস্ক্রাইব
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyCouponCode(code) {
+  navigator.clipboard.writeText(code).then(function() {
+    showToast('কুপন কোড কপি হয়েছে: ' + code, 'success');
+  }).catch(function() {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = code;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    showToast('কুপন কোড কপি হয়েছে: ' + code, 'success');
+  });
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+</script>
+{% endblock %}

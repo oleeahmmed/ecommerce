@@ -1,0 +1,748 @@
+/* Custom Admin Styles for আমার ফ্রেশ বিডি */
+
+/* Dashboard customizations */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #10b981;
+}
+
+.stat-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1f2937;
+}
+
+.stat-card p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Product image hover effects */
+.field-display_image img:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-confirmed {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-shipped {
+    background-color: #e0e7ff;
+    color: #5b21b6;
+}
+
+.status-delivered {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Custom form styling */
+.form-row {
+    margin-bottom: 1rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Bengali font support */
+.bengali-text {
+    font-family: 'Hind Siliguri', sans-serif;
+}
+
+/* Custom button styles */
+.btn-primary-custom {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background-color: #059669;
+    border-color: #059669;
+}
+
+/* Table improvements */
+.admin-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Success/Error messages */
+.messages {
+    margin-bottom: 1rem;
+}
+
+.messages .success {
+    background-color: #d1fae5;
+    border-color: #10b981;
+    color: #065f46;
+}
+
+.messages .error {
+    background-color: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+/* Dashboard specific styles */
+.dashboard-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.dashboard-stat-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.dashboard-stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.dashboard-stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0;
+}
+
+.dashboard-alert {
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-alert-danger {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.dashboard-quick-action {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.dashboard-quick-action:hover {
+    text-decoration: none;
+}
+
+.dashboard-quick-action-primary {
+    color: #2563eb;
+}
+
+.dashboard-quick-action-primary:hover {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+}
+
+.dashboard-quick-action-secondary {
+    color: #4b5563;
+}
+
+.dashboard-quick-action-secondary:hover {
+    background-color: #f9fafb;
+    color: #374151;
+}
+
+.dashboard-quick-action-warning {
+    color: #d97706;
+}
+
+.dashboard-quick-action-warning:hover {
+    background-color: #fffbeb;
+    color: #b45309;
+}
+
+.dashboard-quick-action-success {
+    color: #059669;
+}
+
+.dashboard-quick-action-success:hover {
+    background-color: #ecfdf5;
+    color: #047857;
+}
+
+/* Analytics section */
+.dashboard-analytics-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.dashboard-analytics-item:last-child {
+    border-bottom: none;
+}
+
+.dashboard-analytics-name {
+    font-size: 0.875rem;
+    color: #111827;
+    flex: 1;
+}
+
+.dashboard-analytics-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2563eb;
+}
+
+.dashboard-analytics-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* Responsive dashboard */
+@media (min-width: 768px) {
+    .dashboard-grid-md-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-grid-lg-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .dashboard-grid-lg-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Dark mode support for dashboard */
+@media (prefers-color-scheme: dark) {
+    .dashboard-card {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    
+    .dashboard-stat-value {
+        color: #f9fafb;
+    }
+    
+    .dashboard-stat-label {
+        color: #d1d5db;
+    }
+    
+    .dashboard-analytics-name {
+        color: #f9fafb;
+    }
+}/* Char
+t.js Dashboard Styles */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin: 1rem 0;
+}
+
+.chart-small {
+    height: 250px;
+}
+
+.chart-large {
+    height: 400px;
+}
+
+/* Chart card hover effects */
+.chart-card {
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Chart loading state */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.chart-loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Chart responsive design */
+@media (max-width: 768px) {
+    .chart-container {
+        height: 200px;
+    }
+    
+    .chart-small {
+        height: 180px;
+    }
+}
+
+/* Chart legend customization */
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.chart-legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.chart-legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 0.5rem;
+}
+
+/* Dashboard grid improvements for charts */
+.dashboard-charts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Chart title styling */
+.chart-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Chart container with border */
+.chart-wrapper {
+    background: white;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Chart data labels */
+.chart-data-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Chart tooltip customization */
+.chartjs-tooltip {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border-radius: 6px !important;
+    color: white !important;
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+}
+
+/* Chart animation improvements */
+.chart-animate {
+    animation: chartFadeIn 0.8s ease-out;
+}
+
+@keyframes chartFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Chart error state */
+.chart-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    color: #ef4444;
+    font-size: 0.875rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+}
+
+/* Chart no data state */
+.chart-no-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    color: #6b7280;
+    font-size: 0.875rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+}/* 
+Product List Filter Styles */
+.filter-sidebar {
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+}
+
+.filter-section {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filter-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.filter-option {
+    transition: all 0.2s ease;
+}
+
+.filter-option:hover {
+    background-color: #f9fafb;
+    padding-left: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.active-filter-tag {
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.active-filter-tag button {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.price-range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: #e5e7eb;
+    outline: none;
+}
+
+.price-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+}
+
+.price-range-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: none;
+}
+
+/* Mobile filter overlay */
+.mobile-filter-overlay {
+    backdrop-filter: blur(4px);
+}
+
+.mobile-filter-content {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.mobile-filter-overlay.active .mobile-filter-content {
+    transform: translateX(0);
+}
+
+/* Product grid loading state */
+.products-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.products-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Filter animation */
+.filter-fade-in {
+    animation: filterFadeIn 0.3s ease-out;
+}
+
+@keyframes filterFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Sort dropdown styling */
+.sort-dropdown {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+/* Filter count badges */
+.filter-count {
+    background-color: #ef4444;
+    color: white;
+    font-size: 0.625rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 9999px;
+    margin-left: 0.25rem;
+}
+
+/* Responsive filter adjustments */
+@media (max-width: 1024px) {
+    .filter-sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 320px;
+        height: 100vh;
+        background: white;
+        z-index: 50;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-sidebar.active {
+        left: 0;
+    }
+}
+
+/* Filter loading states */
+.filter-loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Custom checkbox and radio styles */
+.custom-checkbox,
+.custom-radio {
+    position: relative;
+    cursor: pointer;
+}
+
+.custom-checkbox input,
+.custom-radio input {
+    opacity: 0;
+    position: absolute;
+}
+
+.custom-checkbox .checkmark,
+.custom-radio .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 2px solid #d1d5db;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.custom-radio .checkmark {
+    border-radius: 50%;
+}
+
+.custom-checkbox input:checked ~ .checkmark,
+.custom-radio input:checked ~ .checkmark {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.custom-checkbox .checkmark:after,
+.custom-radio .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after,
+.custom-radio input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.custom-checkbox .checkmark:after {
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.custom-radio .checkmark:after {
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+}

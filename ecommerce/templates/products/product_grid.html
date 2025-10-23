@@ -1,0 +1,95 @@
+{% load static %}
+
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4" id="product-grid">
+  {% for product in products %}
+  <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 product-card">
+    <div class="relative">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-40 object-cover">
+      {% else %}
+        <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
+          <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+      {% endif %}
+      
+      {% if product.is_on_sale %}
+      <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+        {{ product.sale_percentage }}% ছাড়
+      </div>
+      {% endif %}
+      
+      <div class="absolute top-2 right-2 space-y-2">
+        <button class="quick-view-btn w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition" 
+                data-product-id="{{ product.id }}" title="দ্রুত দেখুন">
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <div class="p-4">
+      <h3 class="font-medium text-sm mb-2 line-clamp-2">{{ product.name }}</h3>
+      
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center space-x-2">
+          {% if product.is_on_sale %}
+            <span class="text-lg font-bold text-primary">৳{{ product.discount_price }}</span>
+            <span class="text-sm text-gray-500 line-through">৳{{ product.price }}</span>
+          {% else %}
+            <span class="text-lg font-bold text-primary">৳{{ product.price }}</span>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Stock Status -->
+      {% if product.stock > 0 %}
+        <div class="text-xs text-green-600 mb-2">স্টকে আছে ({{ product.stock }}টি)</div>
+      {% else %}
+        <div class="text-xs text-red-600 mb-2">স্টকে নেই</div>
+      {% endif %}
+      
+      <!-- Quantity and Add to Cart -->
+      <div class="flex items-center space-x-2 mb-2">
+        <select name="quantity" class="text-xs border rounded px-2 py-1 flex-1" {% if product.stock == 0 %}disabled{% endif %}>
+          <option value="1">১টি</option>
+          <option value="2">২টি</option>
+          <option value="3">৩টি</option>
+          <option value="4">৪টি</option>
+          <option value="5">৫টি</option>
+        </select>
+        
+        <button class="add-to-cart-btn bg-primary text-white px-3 py-1 rounded text-xs font-medium hover:bg-primary-dark transition flex-1 {% if product.stock == 0 %}opacity-50 cursor-not-allowed{% endif %}" 
+                data-product-id="{{ product.id }}" {% if product.stock == 0 %}disabled{% endif %}>
+          কার্টে যোগ করুন
+        </button>
+      </div>
+      
+      <!-- Buy Now Button -->
+      {% if product.stock > 0 %}
+      <button class="buy-now-btn w-full bg-orange-500 text-white px-3 py-2 rounded text-xs font-medium hover:bg-orange-600 transition" 
+              data-product-id="{{ product.id }}">
+        এখনই কিনুন
+      </button>
+      {% else %}
+      <button class="w-full bg-gray-300 text-gray-500 px-3 py-2 rounded text-xs font-medium cursor-not-allowed" disabled>
+        স্টকে নেই
+      </button>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-span-full text-center py-12">
+    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+    </svg>
+    <p class="text-gray-500 text-lg">কোন পণ্য পাওয়া যায়নি</p>
+    <a href="{% url 'product_list' %}" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition">
+      সব পণ্য দেখুন
+    </a>
+  </div>
+  {% endfor %}
+</div>

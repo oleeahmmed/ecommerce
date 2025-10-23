@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen">
+<!-- Hero Section -->
+<section class="bg-white py-5">
+  <div class="max-w-screen-2xl mx-auto px-3 md:px-10">
+    <div class="flex w-full">
+      <div class="w-full pr-0 md:w-3/5 md:pr-6">
+        <!-- Carousel -->
+        <div class="relative overflow-hidden mx-auto rounded-lg">
+          <div class="carousel-track relative flex h-full w-full z-[1]" id="heroCarouselTrack">
+            {% for slider in hero_sliders %}
+            <div class="carousel-slide relative shrink-0 h-full w-full overflow-hidden">
+              {% if slider.image %}
+                <img alt="{{ slider.title }}" src="{{ slider.image.url }}" class="w-full h-64 md:h-80 object-cover">
+              {% else %}
+                <div class="w-full h-64 md:h-80 bg-gray-300 flex items-center justify-center">
+                  <svg class="w-16 h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+              {% endif %}
+              <div class="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-start z-10">
+                <div class="w-5/6 md:w-7/12 pl-4 pr-12 md:pl-10 md:pr-16">
+                  <h1 class="text-white text-xl md:text-3xl font-bold mb-2 leading-7 md:leading-9">{{ slider.title }}</h1>
+                  {% if slider.subtitle %}
+                  <p class="text-white text-sm md:text-base mb-4">{{ slider.subtitle }}</p>
+                  {% endif %}
+                  {% if slider.button_link %}
+                  <a href="{{ slider.button_link }}" class="inline-block bg-primary text-white text-sm font-medium px-6 py-2 rounded-lg hover:bg-primary-dark transition">
+                    {{ slider.button_text }}
+                  </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <!-- Default slides if no sliders exist -->
+            <div class="carousel-slide relative shrink-0 h-full w-full overflow-hidden">
+              <img alt="Default Slide" src="https://via.placeholder.com/800x400/14b8a6/ffffff?text=Welcome+to+Kachabazar" class="w-full h-64 md:h-80 object-cover">
+              <div class="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-start z-10">
+                <div class="w-5/6 md:w-7/12 pl-4 pr-12 md:pl-10 md:pr-16">
+                  <h1 class="text-white text-xl md:text-3xl font-bold mb-2">স্বাগতম কাঁচাবাজারে</h1>
+                  <p class="text-white text-sm md:text-base mb-4">তাজা এবং মানসম্পন্ন পণ্য সরাসরি আপনার দোরগোড়ায়</p>
+                  <a href="{% url 'product_list' %}" class="inline-block bg-primary text-white text-sm font-medium px-6 py-2 rounded-lg hover:bg-primary-dark transition">
+                    এখনই কিনুন
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          
+          <!-- Carousel Dots -->
+          {% if hero_sliders|length > 1 %}
+          <div class="carousel-dots absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+            {% for slider in hero_sliders %}
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white opacity-50 hover:opacity-100 transition" data-slide="{{ forloop.counter0 }}"></button>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Coupon Section -->
+      <div class="hidden md:flex w-2/5 pl-6">
+        <div class="w-full">
+          <div class="bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-200 rounded-lg h-full">
+            <div class="bg-orange-100 px-6 py-3 rounded-t-lg border-b border-orange-200">
+              <h3 class="font-medium text-gray-800">সর্বশেষ সুপার ডিসকাউন্ট কুপন কোড</h3>
+            </div>
+            <div class="p-4 space-y-4">
+              {% for coupon in active_coupons %}
+              <div class="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-16 h-16 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                    <div class="text-center">
+                      <div class="text-white text-lg font-bold">
+                        {% if coupon.discount_type == 'percentage' %}
+                          {{ coupon.discount_value }}%
+                        {% else %}
+                          ৳{{ coupon.discount_value }}
+                        {% endif %}
+                      </div>
+                      <div class="text-white text-xs">ছাড়</div>
+                    </div>
+                  </div>
+                  <div class="ml-3">
+                    <h6 class="font-medium text-gray-800">
+                      {% if coupon.discount_type == 'percentage' %}
+                        {{ coupon.discount_value }}% ছাড়
+                      {% else %}
+                        ৳{{ coupon.discount_value }} ছাড়
+                      {% endif %}
+                    </h6>
+                    <p class="text-xs text-gray-600">
+                      {% if coupon.minimum_amount > 0 %}
+                        ন্যূনতম ৳{{ coupon.minimum_amount }} অর্ডারে
+                      {% else %}
+                        সকল অর্ডারে প্রযোজ্য
+                      {% endif %}
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      মেয়াদ: {{ coupon.valid_to|date:"d M Y" }} পর্যন্ত
+                    </p>
+                  </div>
+                </div>
+                <button class="coupon-code bg-orange-100 text-orange-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition flex items-center" data-code="{{ coupon.code }}">
+                  {{ coupon.code }}
+                  <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                </button>
+              </div>
+              {% empty %}
+              <!-- Default coupon if no coupons exist -->
+              <div class="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-16 h-16 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                    <div class="text-center">
+                      <div class="text-white text-lg font-bold">20%</div>
+                      <div class="text-white text-xs">ছাড়</div>
+                    </div>
+                  </div>
+                  <div class="ml-3">
+                    <h6 class="font-medium text-gray-800">নতুন গ্রাহক ছাড়</h6>
+                    <p class="text-xs text-gray-600">প্রথম অর্ডারে ২০% ছাড়</p>
+                    <p class="text-xs text-gray-500">সীমিত সময়ের জন্য</p>
+                  </div>
+                </div>
+                <button class="coupon-code bg-orange-100 text-orange-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition flex items-center" data-code="NEW20">
+                  NEW20
+                  <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                </button>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Promotional Banner -->
+  <!-- <section class="bg-gradient-to-r from-green-50 to-emerald-100 py-8">
+    <div class="max-w-screen-2xl mx-auto px-4 md:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl p-6 shadow-lg">
+        <div class="text-center md:text-left mb-4 md:mb-0">
+          <h2 class="text-2xl md:text-3xl font-bold text-green-800 mb-2">
+            ১০০% প্রাকৃতিক মানের জৈব পণ্য
+          </h2>
+          <p class="text-green-600 mb-4">
+            আমাদের সর্বশেষ ডিসকাউন্ট পণ্য দেখুন এবং একটি বিশেষ ডিসকাউন্ট পণ্য পান
+          </p>
+          <a href="{% url 'product_list' %}?category=organic" 
+             class="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+            এখনই কিনুন
+          </a>
+        </div>
+        <div class="w-48 h-48">
+          <img src="{% static 'images/62.jpg' %}" alt="জৈব পণ্য" class="w-full h-full object-contain">
+        </div>
+      </div>
+    </div>
+  </section> -->
+
+  <!-- Categories Section -->
+  <!-- <section class="py-12 bg-white">
+    <div class="max-w-screen-2xl mx-auto px-4 md:px-8">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold">জনপ্রিয় ক্যাটাগরি</h2>
+        <a href="{% url 'product_list' %}" class="text-primary hover:text-primary-dark font-semibold">
+          সব দেখুন
+        </a>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {% for category in categories|slice:":12" %}
+        <a href="{% url 'product_list' %}?category={{ category.slug }}" 
+           class="category-card bg-white border border-gray-200 rounded-xl p-4 text-center hover:shadow-lg hover:border-primary transition-all duration-300 group">
+          <div class="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-primary transition-colors">
+            {% if category.image %}
+              <img src="{{ category.image.url }}" alt="{{ category.name }}" class="w-10 h-10 object-contain">
+            {% else %}
+              <svg class="w-8 h-8 text-gray-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+            {% endif %}
+          </div>
+          <h3 class="font-medium text-sm group-hover:text-primary transition-colors">{{ category.name }}</h3>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section> -->
+
+  <!-- Featured Products -->
+  <section class="py-12 bg-gray-50">
+    <div class="max-w-screen-2xl mx-auto px-4 md:px-8">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold">ফিচার্ড পণ্য</h2>
+        <a href="{% url 'product_list' %}" class="text-primary hover:text-primary-dark font-semibold">
+          সব দেখুন
+        </a>
+      </div>
+      
+      <!-- Use product grid component for featured products -->
+      {% include 'products/product_grid.html' with products=featured_products %}
+    </div>
+  </section>
+
+  <!-- Special Offers -->
+  <section class="py-12 bg-white">
+    <div class="max-w-screen-2xl mx-auto px-4 md:px-8">
+      <h2 class="text-2xl md:text-3xl font-bold mb-8">বিশেষ অফার</h2>
+      
+
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for offer in special_offers %}
+        <div class="{{ offer.background_color }} rounded-2xl text-white overflow-hidden">
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">{{ offer.title }}</h3>
+            {% if offer.subtitle %}
+            <p class="mb-4 opacity-90">{{ offer.subtitle }}</p>
+            {% endif %}
+            {% if offer.description %}
+            <p class="mb-4 opacity-75 text-sm">{{ offer.description }}</p>
+            {% endif %}
+            {% if offer.button_link %}
+            <a href="{{ offer.button_link }}" class="inline-block bg-white text-gray-800 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
+              {{ offer.button_text }}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% empty %}
+        <!-- Default offers if no special offers exist -->
+        <div class="bg-gradient-to-r from-orange-400 to-red-500 rounded-2xl text-white overflow-hidden">
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">গ্র্যান্ড সেল</h3>
+            <p class="mb-4 opacity-90">সমস্ত পণ্যে ৫০% পর্যন্ত ছাড়</p>
+            <a href="{% url 'product_list' %}" class="inline-block bg-white text-orange-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
+              এখনই কিনুন
+            </a>
+          </div>
+        </div>
+        <div class="bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl text-white overflow-hidden">
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">ফ্রি ডেলিভারি</h3>
+            <p class="mb-4 opacity-90">১০০০ টাকার উপর অর্ডারে ফ্রি হোম ডেলিভারি</p>
+            <a href="{% url 'product_list' %}" class="inline-block bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
+              শপিং করুন
+            </a>
+          </div>
+        </div>
+        <div class="bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl text-white overflow-hidden">
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">নতুন গ্রাহক অফার</h3>
+            <p class="mb-4 opacity-90">প্রথম অর্ডারে ২০% অতিরিক্ত ছাড়</p>
+            <a href="{% url 'register' %}" class="inline-block bg-white text-green-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
+              রেজিস্টার করুন
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="py-12 bg-primary text-white">
+    <div class="max-w-screen-2xl mx-auto px-4 md:px-8 text-center">
+      <h2 class="text-2xl md:text-3xl font-bold mb-4">আমাদের নিউজলেটার সাবস্ক্রাইব করুন</h2>
+      <p class="mb-6 opacity-90 max-w-2xl mx-auto">নতুন পণ্য এবং আসন্ন বিক্রয় সম্পর্কে সর্বশেষ আপডেট পান</p>
+      
+      <form class="max-w-md mx-auto flex gap-2">
+        <input type="email" placeholder="আপনার ইমেইল ঠিকানা" 
+               class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white">
+        <button type="submit" class="bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+          সাবস্ক্রাইব
+        </button>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Home page specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize carousel
+  initHeroCarousel();
+  
+  // Initialize coupon codes
+  initCouponCodes();
+  
+  // Category card animations
+  const categoryCards = document.querySelectorAll('.category-card');
+  categoryCards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-5px)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+
+  // Product card animations
+  const productCards = document.querySelectorAll('.product-card');
+  productCards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-5px)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+});
+
+function initHeroCarousel() {
+  const track = document.getElementById('heroCarouselTrack');
+  const dots = document.querySelectorAll('.carousel-dot');
+  const slides = document.querySelectorAll('.carousel-slide');
+  
+  if (!track || slides.length <= 1) return;
+  
+  let currentSlide = 0;
+  const totalSlides = slides.length;
+
+  function goToSlide(index) {
+    currentSlide = index;
+    const slideWidth = track.parentElement.offsetWidth;
+    track.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+    
+    // Update dots
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('opacity-100', i === currentSlide);
+      dot.classList.toggle('opacity-50', i !== currentSlide);
+    });
+  }
+
+  // Dot click handlers
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => goToSlide(index));
+  });
+  
+  // Auto-play
+  setInterval(() => {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    goToSlide(currentSlide);
+  }, 5000);
+  
+  // Handle resize
+  window.addEventListener('resize', () => goToSlide(currentSlide));
+  
+  // Initialize
+  goToSlide(0);
+}
+
+function initCouponCodes() {
+  const couponButtons = document.querySelectorAll('.coupon-code');
+  
+  couponButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const code = this.dataset.code;
+      
+      // Copy to clipboard
+      const tempInput = document.createElement('textarea');
+      tempInput.value = code;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showToast(`কুপন কোড "${code}" কপি হয়েছে!`);
+        } else {
+          showToast('কুপন কোড কপি করতে ব্যর্থ হয়েছে।');
+        }
+      } catch (err) {
+        showToast('ক্লিপবোর্ড সাপোর্ট নেই।');
+      }
+      
+      document.body.removeChild(tempInput);
+    });
+  });
+}
+</script>
+
+<style>
+.carousel-track {
+  transition: transform 0.5s ease;
+}
+
+.carousel-slide {
+  min-width: 100%;
+  flex-shrink: 0;
+}
+
+.carousel-dot.opacity-100 {
+  background-color: #14b8a6;
+}
+</style>
+{% endblock %}

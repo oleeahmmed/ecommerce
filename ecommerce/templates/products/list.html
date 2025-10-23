@@ -1,0 +1,692 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  {% if current_category %}
+    {{ current_category.get_meta_title }}
+  {% elif search_query %}
+    "{{ search_query }}" এর জন্য অনুসন্ধান - আমার ফ্রেশ বিডি
+  {% else %}
+    সকল পণ্য - আমার ফ্রেশ বিডি | তাজা ও মানসম্পন্ন পণ্য
+  {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+  {% if current_category %}
+    {{ current_category.get_meta_description }}
+  {% elif search_query %}
+    "{{ search_query }}" এর জন্য অনুসন্ধানের ফলাফল। আমার ফ্রেশ বিডি থেকে তাজা ও মানসম্পন্ন পণ্য কিনুন। দ্রুত ডেলিভারি ও সাশ্রয়ী দাম।
+  {% else %}
+    আমার ফ্রেশ বিডিের সকল পণ্য দেখুন। তাজা ফল, সবজি, দৈনন্দিন প্রয়োজনীয় পণ্য সাশ্রয়ী দামে। দ্রুত ডেলিভারি সারা ঢাকায়।
+  {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+  {% if current_category %}
+    {{ current_category.meta_keywords|default:"" }}{% if current_category.meta_keywords %}, {% endif %}{{ current_category.name }}, অনলাইন শপিং, আমার ফ্রেশ বিডি
+  {% elif search_query %}
+    {{ search_query }}, অনলাইন শপিং, আমার ফ্রেশ বিডি, তাজা পণ্য
+  {% else %}
+    অনলাইন গ্রোসারি, তাজা ফল, সবজি, দৈনন্দিন পণ্য, আমার ফ্রেশ বিডি, ঢাকা ডেলিভারি
+  {% endif %}
+{% endblock %}
+
+{% block og_image %}
+  {% if current_category and current_category.image %}
+    {{ request.build_absolute_uri }}{{ current_category.image.url }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block structured_data %}
+{{ block.super }}
+{% if current_category %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "{{ current_category.name }}",
+  "description": "{{ current_category.get_meta_description }}",
+  "url": "{{ request.build_absolute_uri }}",
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ products.count }},
+    "itemListElement": [
+      {% for product in products|slice:":10" %}
+      {
+        "@type": "Product",
+        "position": {{ forloop.counter }},
+        "name": "{{ product.name }}",
+        "url": "{{ request.build_absolute_uri }}{{ product.get_absolute_url }}",
+        "image": "{% if product.image %}{{ request.build_absolute_uri }}{{ product.image.url }}{% endif %}",
+        "offers": {
+          "@type": "Offer",
+          "price": "{{ product.discount_price|default:product.price }}",
+          "priceCurrency": "BDT"
+        }
+      }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+  }
+}
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+  <!-- Page Header -->
+  <div class="bg-white border-b">
+    <div class="max-w-screen-2xl mx-auto px-4 md:px-8 py-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+            {% if current_category %}
+              {{ current_category.name }}
+            {% elif search_query %}
+              "{{ search_query }}" এর জন্য অনুসন্ধান
+            {% else %}
+              সকল পণ্য
+            {% endif %}
+          </h1>
+          <p class="text-gray-600 mt-1">
+            {% if products %}
+              {{ products|length }} টি পণ্য পাওয়া গেছে
+            {% else %}
+              কোন পণ্য পাওয়া যায়নি
+            {% endif %}
+          </p>
+        </div>
+        
+        <!-- Sort Options -->
+        <div class="hidden md:flex items-center space-x-4">
+          <select id="sort-select" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+            <option value="">সাজান</option>
+            <option value="name" {% if current_sort == 'name' %}selected{% endif %}>নাম অনুসারে</option>
+            <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>দাম: কম থেকে বেশি</option>
+            <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>দাম: বেশি থেকে কম</option>
+            <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>নতুন পণ্য</option>
+            <option value="popular" {% if current_sort == 'popular' %}selected{% endif %}>জনপ্রিয়</option>
+            <option value="discount" {% if current_sort == 'discount' %}selected{% endif %}>সর্বোচ্চ ছাড়</option>
+          </select>
+          
+          <!-- Mobile Filter Toggle -->
+          <button id="mobile-filter-toggle" class="md:hidden bg-gray-100 p-2 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-screen-2xl mx-auto px-4 md:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Sidebar Filters -->
+      <div class="lg:w-1/4">
+        <div id="filters-sidebar" class="bg-white rounded-lg shadow-sm p-6 sticky top-4 lg:block hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">ফিল্টার</h3>
+            <button id="clear-filters" class="text-sm text-red-600 hover:text-red-800">সব মুছুন</button>
+          </div>
+          
+          <!-- Active Filters -->
+          <div id="active-filters" class="mb-4 hidden">
+            <div class="flex flex-wrap gap-2" id="active-filters-list"></div>
+          </div>
+          
+          <!-- Categories -->
+          <div class="mb-6">
+            <h4 class="font-medium mb-3">ক্যাটাগরি</h4>
+            <div class="space-y-2">
+              <a href="{% url 'product_list' %}" class="block text-sm text-gray-600 hover:text-primary {% if not current_category %}font-medium text-primary{% endif %}">
+                সকল পণ্য
+              </a>
+              {% for category in categories %}
+              <a href="{% url 'product_list' %}?category={{ category.slug }}" 
+                 class="block text-sm text-gray-600 hover:text-primary {% if current_category.slug == category.slug %}font-medium text-primary{% endif %}">
+                {{ category.name }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+          
+          <!-- Price Range -->
+          <div class="mb-6">
+            <h4 class="font-medium mb-3">দামের পরিসর</h4>
+            <div class="space-y-2">
+              <label class="flex items-center">
+                <input type="radio" name="price_range" value="0-500" class="text-primary focus:ring-primary" {% if current_price_range == '0-500' %}checked{% endif %}>
+                <span class="ml-2 text-sm text-gray-600">৳০ - ৳৫০০</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="price_range" value="500-1000" class="text-primary focus:ring-primary" {% if current_price_range == '500-1000' %}checked{% endif %}>
+                <span class="ml-2 text-sm text-gray-600">৳৫০০ - ৳১০০০</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="price_range" value="1000-2000" class="text-primary focus:ring-primary" {% if current_price_range == '1000-2000' %}checked{% endif %}>
+                <span class="ml-2 text-sm text-gray-600">৳১০০০ - ৳২০০০</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="price_range" value="2000+" class="text-primary focus:ring-primary" {% if current_price_range == '2000+' %}checked{% endif %}>
+                <span class="ml-2 text-sm text-gray-600">৳২০০০+</span>
+              </label>
+            </div>
+            
+            <!-- Custom Price Range -->
+            <div class="mt-4 pt-4 border-t">
+              <h5 class="text-sm font-medium mb-2">কাস্টম দাম</h5>
+              <div class="flex space-x-2">
+                <input type="number" id="min-price" placeholder="সর্বনিম্ন" value="{{ current_min_price }}" 
+                       class="w-full text-xs border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
+                <span class="text-gray-400">-</span>
+                <input type="number" id="max-price" placeholder="সর্বোচ্চ" value="{{ current_max_price }}" 
+                       class="w-full text-xs border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
+              </div>
+              <button id="apply-price-range" class="w-full mt-2 bg-primary text-white text-xs py-1 rounded hover:bg-primary-dark">
+                প্রয়োগ করুন
+              </button>
+            </div>
+          </div>
+          
+          <!-- Brand Filter -->
+          {% if brands %}
+          <div class="mb-6">
+            <h4 class="font-medium mb-3">ব্র্যান্ড</h4>
+            <div class="space-y-2 max-h-40 overflow-y-auto">
+              {% for brand in brands %}
+              <label class="flex items-center">
+                <input type="radio" name="brand" value="{{ brand }}" class="text-primary focus:ring-primary" {% if current_brand == brand %}checked{% endif %}>
+                <span class="ml-2 text-sm text-gray-600">{{ brand }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+          
+          <!-- Availability -->
+          <div class="mb-6">
+            <h4 class="font-medium mb-3">উপলব্ধতা</h4>
+            <div class="space-y-2">
+              <label class="flex items-center">
+                <input type="checkbox" name="in_stock" value="true" class="rounded border-gray-300 text-primary focus:ring-primary" {% if current_in_stock == 'true' %}checked{% endif %}>
+                <span class="ml-2 text-sm text-gray-600">স্টকে আছে</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" name="on_sale" value="true" class="rounded border-gray-300 text-primary focus:ring-primary" {% if current_on_sale == 'true' %}checked{% endif %}>
+                <span class="ml-2 text-sm text-gray-600">ছাড়যুক্ত পণ্য</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Apply Filters Button -->
+          <button id="apply-filters" class="w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-primary-dark transition">
+            ফিল্টার প্রয়োগ করুন
+          </button>
+        </div>
+        
+        <!-- Mobile Filter Overlay -->
+        <div id="mobile-filter-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden hidden">
+          <div class="fixed inset-y-0 left-0 w-80 bg-white p-6 overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">ফিল্টার</h3>
+              <button id="close-mobile-filter" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+            <!-- Same filter content as desktop -->
+            <div class="space-y-6">
+              <!-- Copy the same filter sections here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="lg:w-3/4">
+        {% if products %}
+          <div id="products-container">
+            {% include 'products/product_grid.html' with products=products %}
+          </div>
+          
+          <!-- Load More Button -->
+          {% if has_more %}
+          <div class="mt-12 flex justify-center">
+            <button id="load-more-btn" class="bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-primary-dark transition-all duration-300 flex items-center space-x-2 hover:shadow-lg transform hover:-translate-y-1">
+              <span>আরো পণ্য দেখুন</span>
+              <svg class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Loading indicator -->
+          <div id="loading-indicator" class="mt-12 flex justify-center hidden">
+            <div class="flex items-center space-x-2 text-gray-600">
+              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              <span>লোড হচ্ছে...</span>
+            </div>
+          </div>
+          
+          <!-- No more products message -->
+          <div id="no-more-products" class="mt-8 text-center text-gray-600 hidden">
+            <div class="flex flex-col items-center space-y-2">
+              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <p class="text-lg font-medium">সব পণ্য দেখানো হয়েছে</p>
+              <p class="text-sm">আপনি সকল উপলব্ধ পণ্য দেখেছেন</p>
+            </div>
+          </div>
+          {% endif %}
+        {% else %}
+          <!-- No Products Found -->
+          <div class="text-center py-16">
+            <svg class="w-24 h-24 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+            </svg>
+            <h3 class="text-xl font-medium text-gray-900 mb-2">কোন পণ্য পাওয়া যায়নি</h3>
+            <p class="text-gray-600 mb-6">
+              {% if search_query %}
+                "{{ search_query }}" এর জন্য কোন পণ্য খুঁজে পাওয়া যায়নি। অন্য কিছু খুঁজে দেখুন।
+              {% elif current_category %}
+                এই ক্যাটাগরিতে কোন পণ্য নেই।
+              {% else %}
+                বর্তমানে কোন পণ্য উপলব্ধ নেই।
+              {% endif %}
+            </p>
+            <a href="{% url 'home' %}" class="inline-block bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-dark transition">
+              হোমে ফিরে যান
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ products_per_page|json_script:"products-per-page" }}
+<script>
+// Get template variables
+const PRODUCTS_PER_PAGE = JSON.parse(document.getElementById('products-per-page').textContent) || 12;
+const LOAD_MORE_URL = '{% url "load_more_products" %}';
+
+document.addEventListener('DOMContentLoaded', function() {
+    let currentOffset = PRODUCTS_PER_PAGE;
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const productsContainer = document.getElementById('products-container');
+    
+    // Load More functionality
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            loadMoreProducts();
+        });
+    }
+    
+    function loadMoreProducts() {
+        // Show loading indicator and hide load more button
+        loadMoreBtn.style.display = 'none';
+        loadingIndicator.classList.remove('hidden');
+        
+        // Add loading animation to the button icon
+        const buttonIcon = loadMoreBtn.querySelector('svg');
+        if (buttonIcon) {
+            buttonIcon.style.transform = 'rotate(180deg)';
+        }
+        
+        // Get current URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category') || '';
+        const search = urlParams.get('search') || '';
+        
+        // Build request URL
+        const requestUrl = new URL(LOAD_MORE_URL, window.location.origin);
+        requestUrl.searchParams.set('offset', currentOffset);
+        requestUrl.searchParams.set('per_page', PRODUCTS_PER_PAGE);
+        if (category) requestUrl.searchParams.set('category', category);
+        if (search) requestUrl.searchParams.set('search', search);
+        
+        fetch(requestUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.products_html) {
+                    // Create a temporary container to parse the HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data.products_html;
+                    
+                    // Get the grid container and append new products
+                    const gridContainer = productsContainer.querySelector('.grid');
+                    const newProducts = tempDiv.querySelector('.grid');
+                    
+                    if (gridContainer && newProducts && newProducts.children.length > 0) {
+                        // Append each new product with staggered animation
+                        Array.from(newProducts.children).forEach((product, index) => {
+                            product.style.opacity = '0';
+                            product.style.transform = 'translateY(20px)';
+                            gridContainer.appendChild(product);
+                            
+                            // Animate in with staggered delay
+                            setTimeout(() => {
+                                product.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                                product.style.opacity = '1';
+                                product.style.transform = 'translateY(0)';
+                            }, index * 100);
+                        });
+                        
+                        // Update offset
+                        currentOffset += data.loaded_count;
+                        
+                        // Show success message
+                        showToast(`${data.loaded_count}টি নতুন পণ্য লোড হয়েছে`, 'success');
+                        
+                        // Show/hide load more button based on whether there are more products
+                        if (data.has_more) {
+                            setTimeout(() => {
+                                loadMoreBtn.style.display = 'flex';
+                                if (buttonIcon) {
+                                    buttonIcon.style.transform = 'rotate(0deg)';
+                                }
+                            }, 500);
+                        } else {
+                            // Show "no more products" message
+                            const noMoreDiv = document.getElementById('no-more-products');
+                            if (noMoreDiv) {
+                                setTimeout(() => {
+                                    noMoreDiv.classList.remove('hidden');
+                                }, 500);
+                            }
+                        }
+                    } else {
+                        throw new Error('No products found in response');
+                    }
+                } else {
+                    throw new Error(data.message || 'Invalid response format');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading more products:', error);
+                showToast('পণ্য লোড করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'error');
+                
+                // Restore load more button
+                setTimeout(() => {
+                    loadMoreBtn.style.display = 'flex';
+                    if (buttonIcon) {
+                        buttonIcon.style.transform = 'rotate(0deg)';
+                    }
+                }, 500);
+            })
+            .finally(() => {
+                loadingIndicator.classList.add('hidden');
+            });
+    }
+    
+    // Sort functionality
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            applyFilters();
+        });
+    }
+    
+    // Mobile filter toggle
+    const mobileFilterToggle = document.getElementById('mobile-filter-toggle');
+    const mobileFilterOverlay = document.getElementById('mobile-filter-overlay');
+    const closeMobileFilter = document.getElementById('close-mobile-filter');
+    
+    if (mobileFilterToggle) {
+        mobileFilterToggle.addEventListener('click', function() {
+            mobileFilterOverlay.classList.remove('hidden');
+        });
+    }
+    
+    if (closeMobileFilter) {
+        closeMobileFilter.addEventListener('click', function() {
+            mobileFilterOverlay.classList.add('hidden');
+        });
+    }
+    
+    // Filter functionality
+    const applyFiltersBtn = document.getElementById('apply-filters');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+    const applyPriceRangeBtn = document.getElementById('apply-price-range');
+    
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', applyFilters);
+    }
+    
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', clearAllFilters);
+    }
+    
+    if (applyPriceRangeBtn) {
+        applyPriceRangeBtn.addEventListener('click', applyFilters);
+    }
+    
+    // Auto-apply filters on change for better UX
+    const filterInputs = document.querySelectorAll('input[name="price_range"], input[name="brand"], input[name="in_stock"], input[name="on_sale"]');
+    filterInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Small delay to allow for multiple quick changes
+            setTimeout(applyFilters, 300);
+        });
+    });
+    
+    function applyFilters() {
+        const url = new URL(window.location);
+        
+        // Clear existing filter params
+        url.searchParams.delete('sort');
+        url.searchParams.delete('price_range');
+        url.searchParams.delete('min_price');
+        url.searchParams.delete('max_price');
+        url.searchParams.delete('brand');
+        url.searchParams.delete('in_stock');
+        url.searchParams.delete('on_sale');
+        
+        // Sort
+        const sortValue = sortSelect ? sortSelect.value : '';
+        if (sortValue) {
+            url.searchParams.set('sort', sortValue);
+        }
+        
+        // Price range
+        const priceRange = document.querySelector('input[name="price_range"]:checked');
+        if (priceRange) {
+            url.searchParams.set('price_range', priceRange.value);
+        }
+        
+        // Custom price range
+        const minPrice = document.getElementById('min-price');
+        const maxPrice = document.getElementById('max-price');
+        if (minPrice && minPrice.value) {
+            url.searchParams.set('min_price', minPrice.value);
+        }
+        if (maxPrice && maxPrice.value) {
+            url.searchParams.set('max_price', maxPrice.value);
+        }
+        
+        // Brand
+        const brand = document.querySelector('input[name="brand"]:checked');
+        if (brand) {
+            url.searchParams.set('brand', brand.value);
+        }
+        
+        // Availability filters
+        const inStock = document.querySelector('input[name="in_stock"]:checked');
+        if (inStock) {
+            url.searchParams.set('in_stock', 'true');
+        }
+        
+        const onSale = document.querySelector('input[name="on_sale"]:checked');
+        if (onSale) {
+            url.searchParams.set('on_sale', 'true');
+        }
+        
+        // Show loading state
+        showFilterLoading();
+        
+        // Navigate to filtered URL
+        window.location.href = url.toString();
+    }
+    
+    function clearAllFilters() {
+        const url = new URL(window.location);
+        
+        // Keep only category and search params
+        const category = url.searchParams.get('category');
+        const search = url.searchParams.get('search');
+        
+        // Clear all params
+        url.search = '';
+        
+        // Restore category and search if they existed
+        if (category) {
+            url.searchParams.set('category', category);
+        }
+        if (search) {
+            url.searchParams.set('search', search);
+        }
+        
+        window.location.href = url.toString();
+    }
+    
+    function showFilterLoading() {
+        const productsContainer = document.getElementById('products-container');
+        if (productsContainer) {
+            productsContainer.style.opacity = '0.6';
+            productsContainer.style.pointerEvents = 'none';
+        }
+        
+        // Show loading indicator
+        const loadingHtml = `
+            <div class="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span class="text-gray-700">ফিল্টার প্রয়োগ হচ্ছে...</span>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', loadingHtml);
+    }
+    
+    // Update load more functionality to include current filters
+    function loadMoreProducts() {
+        // Show loading indicator and hide load more button
+        loadMoreBtn.style.display = 'none';
+        loadingIndicator.classList.remove('hidden');
+        
+        // Add loading animation to the button icon
+        const buttonIcon = loadMoreBtn.querySelector('svg');
+        if (buttonIcon) {
+            buttonIcon.style.transform = 'rotate(180deg)';
+        }
+        
+        // Get current URL parameters (including all filters)
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Build request URL with all current filters
+        const requestUrl = new URL(LOAD_MORE_URL, window.location.origin);
+        requestUrl.searchParams.set('offset', currentOffset);
+        requestUrl.searchParams.set('per_page', PRODUCTS_PER_PAGE);
+        
+        // Copy all current URL parameters to the request
+        for (const [key, value] of urlParams.entries()) {
+            if (key !== 'offset' && key !== 'per_page') {
+                requestUrl.searchParams.set(key, value);
+            }
+        }
+        
+        fetch(requestUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.products_html) {
+                    // Create a temporary container to parse the HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data.products_html;
+                    
+                    // Get the grid container and append new products
+                    const gridContainer = productsContainer.querySelector('.grid');
+                    const newProducts = tempDiv.querySelector('.grid');
+                    
+                    if (gridContainer && newProducts && newProducts.children.length > 0) {
+                        // Append each new product with staggered animation
+                        Array.from(newProducts.children).forEach((product, index) => {
+                            product.style.opacity = '0';
+                            product.style.transform = 'translateY(20px)';
+                            gridContainer.appendChild(product);
+                            
+                            // Animate in with staggered delay
+                            setTimeout(() => {
+                                product.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                                product.style.opacity = '1';
+                                product.style.transform = 'translateY(0)';
+                            }, index * 100);
+                        });
+                        
+                        // Update offset
+                        currentOffset += data.loaded_count;
+                        
+                        // Show success message
+                        showToast(`${data.loaded_count}টি নতুন পণ্য লোড হয়েছে`, 'success');
+                        
+                        // Show/hide load more button based on whether there are more products
+                        if (data.has_more) {
+                            setTimeout(() => {
+                                loadMoreBtn.style.display = 'flex';
+                                if (buttonIcon) {
+                                    buttonIcon.style.transform = 'rotate(0deg)';
+                                }
+                            }, 500);
+                        } else {
+                            // Show "no more products" message
+                            const noMoreDiv = document.getElementById('no-more-products');
+                            if (noMoreDiv) {
+                                setTimeout(() => {
+                                    noMoreDiv.classList.remove('hidden');
+                                }, 500);
+                            }
+                        }
+                    } else {
+                        throw new Error('No products found in response');
+                    }
+                } else {
+                    throw new Error(data.message || 'Invalid response format');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading more products:', error);
+                showToast('পণ্য লোড করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'error');
+                
+                // Restore load more button
+                setTimeout(() => {
+                    loadMoreBtn.style.display = 'flex';
+                    if (buttonIcon) {
+                        buttonIcon.style.transform = 'rotate(0deg)';
+                    }
+                }, 500);
+            })
+            .finally(() => {
+                loadingIndicator.classList.add('hidden');
+            });
+    }
+});
+</script>
+{% endblock %}

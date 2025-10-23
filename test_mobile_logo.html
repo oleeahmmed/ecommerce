@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Logo Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', Arial, sans-serif;
+        }
+
+        /* Beautiful Mobile Logo Styles */
+        .mobile-logo-container {
+            animation: logoFadeIn 0.8s ease-out;
+        }
+
+        .mobile-logo-img {
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .mobile-logo-img:hover {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+        }
+
+        .mobile-logo-fallback {
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        .mobile-title-container {
+            animation: titleSlideIn 0.8s ease-out 0.2s both;
+        }
+
+        .mobile-title-main {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        .mobile-subtitle {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            animation: subtitleFloat 2s ease-in-out infinite alternate;
+        }
+
+        /* Keyframe Animations */
+        @keyframes logoFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes titleSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes logoGlow {
+            from {
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            }
+            to {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+            }
+        }
+
+        @keyframes titleGlow {
+            0%, 100% {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        @keyframes subtitleFloat {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-2px);
+            }
+        }
+
+        @keyframes titleBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .mobile-logo-container:hover .mobile-title-main {
+            animation: titleBounce 0.6s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-teal-500 p-8">
+    <div class="flex justify-center">
+        <!-- Beautiful Mobile Logo with Animation -->
+        <a href="#" class="flex items-center space-x-2 mobile-logo-container">
+            <!-- Logo with glow effect -->
+            <div class="relative">
+                <!-- Fallback logo with icon (shown since no actual image) -->
+                <div class="flex items-center justify-center w-12 h-12 bg-white/20 rounded-full backdrop-blur-sm mobile-logo-fallback">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </div>
+                <!-- Animated glow ring -->
+                <div class="absolute inset-0 rounded-full bg-white/10 animate-pulse"></div>
+            </div>
+            
+            <!-- Animated Title -->
+            <div class="mobile-title-container">
+                <div class="text-white font-bold mobile-title-main">
+                    <span class="text-lg tracking-wide">আমার</span>
+                    <span class="text-xl ml-1 text-yellow-300 font-extrabold animate-pulse">ফ্রেশ</span>
+                </div>
+                <div class="text-white/80 text-xs font-medium tracking-widest mobile-subtitle">
+                    বিডি
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="text-center mt-8 text-white">
+        <p>Hover over the logo to see the bounce effect!</p>
+    </div>
+</body>
+</html>

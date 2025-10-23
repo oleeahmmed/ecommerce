@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}আমাদের সম্পর্কে - আমার ফ্রেশ বিডি{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-primary to-primary-dark text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold mb-4">আমাদের সম্পর্কে</h1>
+        <p class="text-xl opacity-90">আপনার বিশ্বস্ত অনলাইন গ্রোসারি পার্টনার</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">আমাদের গল্প</h2>
+        <p class="text-lg text-gray-600 mb-6">
+          আমার ফ্রেশ বিডি হল বাংলাদেশের একটি অগ্রণী অনলাইন গ্রোসারি প্ল্যাটফর্ম। আমাদের লক্ষ্য হল গ্রাহকদের দোরগোড়ায় 
+          তাজা, মানসম্পন্ন এবং সাশ্রয়ী মূল্যে দৈনন্দিন প্রয়োজনীয় পণ্য পৌঁছে দেওয়া।
+        </p>
+        <p class="text-lg text-gray-600 mb-6">
+          ২০২০ সাল থেকে আমরা হাজারো পরিবারের বিশ্বস্ত সঙ্গী হিসেবে কাজ করে আসছি। আমাদের রয়েছে 
+          দক্ষ ডেলিভারি টিম এবং ২৪/৭ কাস্টমার সাপোর্ট।
+        </p>
+        <div class="flex items-center space-x-8">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-primary">১০,০০০+</div>
+            <div class="text-gray-600">সন্তুষ্ট গ্রাহক</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-primary">৫,০০০+</div>
+            <div class="text-gray-600">পণ্যের সংগ্রহ</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-primary">৯৮%</div>
+            <div class="text-gray-600">গ্রাহক সন্তুষ্টি</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <img src="{% static 'images/about-us.jpg' %}" alt="আমাদের সম্পর্কে" class="rounded-lg shadow-lg w-full">
+      </div>
+    </div>
+
+    <!-- Mission & Vision -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      <div class="bg-gray-50 p-8 rounded-lg">
+        <div class="flex items-center mb-4">
+          <div class="bg-primary text-white p-3 rounded-lg mr-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900">আমাদের লক্ষ্য</h3>
+        </div>
+        <p class="text-gray-600">
+          প্রতিটি বাংলাদেশী পরিবারের কাছে সহজ, নিরাপদ এবং সাশ্রয়ী মূল্যে দৈনন্দিন প্রয়োজনীয় পণ্য পৌঁছে দেওয়া। 
+          আমরা চাই প্রযুক্তির মাধ্যমে মানুষের জীবনযাত্রার মান উন্নত করতে।
+        </p>
+      </div>
+      <div class="bg-gray-50 p-8 rounded-lg">
+        <div class="flex items-center mb-4">
+          <div class="bg-primary text-white p-3 rounded-lg mr-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900">আমাদের দৃষ্টিভঙ্গি</h3>
+        </div>
+        <p class="text-gray-600">
+          বাংলাদেশের সবচেয়ে বিশ্বস্ত এবং জনপ্রিয় অনলাইন গ্রোসারি প্ল্যাটফর্ম হয়ে ওঠা। আমরা স্বপ্ন দেখি এমন একটি 
+          ভবিষ্যতের যেখানে প্রতিটি পরিবার ঘরে বসেই তাদের সকল প্রয়োজন মেটাতে পারবে।
+        </p>
+      </div>
+    </div>
+
+    <!-- Why Choose Us -->
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">কেন আমাদের বেছে নেবেন?</h2>
+      <p class="text-lg text-gray-600">আমাদের সেবার বিশেষত্ব যা আমাদের আলাদা করে তোলে</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+      <div class="text-center">
+        <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">দ্রুত ডেলিভারি</h3>
+        <p class="text-gray-600">২৪ ঘন্টার মধ্যে আপনার দোরগোড়ায় পণ্য পৌঁছে দেওয়া</p>
+      </div>
+      <div class="text-center">
+        <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">মানসম্পন্ন পণ্য</h3>
+        <p class="text-gray-600">সকল পণ্য যাচাই-বাছাই করে তাজা অবস্থায় সরবরাহ</p>
+      </div>
+      <div class="text-center">
+        <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">নিরাপদ পেমেন্ট</h3>
+        <p class="text-gray-600">সুরক্ষিত অনলাইন পেমেন্ট এবং ক্যাশ অন ডেলিভারি</p>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <!-- <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">আমাদের টিম</h2>
+      <p class="text-lg text-gray-600">যারা আপনার সেবায় নিয়োজিত</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="text-center">
+        <img src="{% static 'images/team-1.jpg' %}" alt="CEO" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover">
+        <h3 class="text-lg font-bold text-gray-900">মোহাম্মদ রহিম</h3>
+        <p class="text-primary">প্রতিষ্ঠাতা ও সিইও</p>
+      </div>
+      <div class="text-center">
+        <img src="{% static 'images/team-2.jpg' %}" alt="CTO" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover">
+        <h3 class="text-lg font-bold text-gray-900">ফাতেমা খাতুন</h3>
+        <p class="text-primary">প্রযুক্তি পরিচালক</p>
+      </div>
+      <div class="text-center">
+        <img src="{% static 'images/team-3.jpg' %}" alt="Operations" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover">
+        <h3 class="text-lg font-bold text-gray-900">আহমেদ হাসান</h3>
+        <p class="text-primary">অপারেশন ম্যানেজার</p>
+      </div>
+      <div class="text-center">
+        <img src="{% static 'images/team-4.jpg' %}" alt="Customer Service" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover">
+        <h3 class="text-lg font-bold text-gray-900">সালমা বেগম</h3>
+        <p class="text-primary">কাস্টমার সার্ভিস প্রধান</p>
+      </div>
+    </div> -->
+  </div>
+</div>
+{% endblock %}

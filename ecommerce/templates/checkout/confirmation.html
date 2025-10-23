@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}অর্ডার নিশ্চিতকরণ - আমার ফ্রেশ বিডি{% endblock %}
+
+{% block content %}
+<!-- Facebook Pixel Purchase Data -->
+{% if FACEBOOK_PIXEL_ID and FACEBOOK_PIXEL_ENABLED %}
+<script>
+window.FACEBOOK_PIXEL_DEBUG = {{ FACEBOOK_PIXEL_DEBUG|yesno:"true,false" }};
+window.orderData = {
+    order_id: '{{ order.order_number }}',
+    total: {{ order.total_amount }},
+    items: [
+        {% for item in order.items.all %}
+        {
+            product_id: '{{ item.product.id }}',
+            name: '{{ item.product.name|escapejs }}',
+            category: '{{ item.product.category.name|escapejs }}',
+            price: {{ item.price }},
+            quantity: {{ item.quantity }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+};
+</script>
+{% endif %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Success Message -->
+        <div class="text-center mb-8">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+                <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h1 class="mt-4 text-3xl font-bold text-gray-900">অর্ডার নিশ্চিত!</h1>
+            <p class="mt-2 text-lg text-gray-600">আপনার কেনাকাটার জন্য ধন্যবাদ</p>
+            <p class="mt-1 text-sm text-gray-500">অর্ডার #{{ order.order_number }}</p>
+        </div>
+
+        <!-- Order Details -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">অর্ডারের বিস্তারিত</h2>
+            </div>
+            
+            <div class="p-6">
+                <!-- Order Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">গ্রাহকের তথ্য</h3>
+                        <p class="text-sm text-gray-600">{{ order.full_name }}</p>
+                        <p class="text-sm text-gray-600">{{ order.email }}</p>
+                        <p class="text-sm text-gray-600">{{ order.phone }}</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">ডেলিভারি ঠিকানা</h3>
+                        <p class="text-sm text-gray-600 whitespace-pre-line">{{ order.address }}</p>
+                        {% if order.special_instructions %}
+                        <div class="mt-2">
+                            <h4 class="text-sm font-medium text-gray-900">বিশেষ নির্দেশনা</h4>
+                            <p class="text-sm text-gray-600">{{ order.special_instructions }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-sm font-medium text-gray-900 mb-4">অর্ডারের পণ্যসমূহ</h3>
+                    <div class="space-y-4">
+                        {% for item in order.items.all %}
+                        <div class="flex items-center justify-between py-2">
+                            <div class="flex items-center space-x-3">
+                                {% if item.product.image %}
+                                  <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                       class="w-12 h-12 object-cover rounded">
+                                {% else %}
+                                  <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                  </div>
+                                {% endif %}
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ item.product.name }}</p>
+                                    <p class="text-sm text-gray-500">পরিমাণ: {{ item.quantity }}</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-medium text-gray-900">৳{{ item.total_price|floatformat:2 }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Order Total -->
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="flex justify-between text-lg font-semibold">
+                        <span>মোট পরিমাণ</span>
+                        <span>৳{{ order.total_amount|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">এরপর কী?</h2>
+            </div>
+            
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-sm font-medium text-blue-600">1</span>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-900">অর্ডার নিশ্চিতকরণ</h3>
+                            <p class="mt-1 text-sm text-gray-600">আমরা {{ order.email }} এ একটি নিশ্চিতকরণ ইমেইল পাঠিয়েছি</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-sm font-medium text-blue-600">2</span>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-900">অর্ডার প্রক্রিয়াকরণ</h3>
+                            <p class="mt-1 text-sm text-gray-600">আমরা আপনার অর্ডার ডেলিভারির জন্য প্রস্তুত করছি</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-sm font-medium text-blue-600">3</span>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-900">ডেলিভারি</h3>
+                            <p class="mt-1 text-sm text-gray-600">আপনার অর্ডার ২-৩ কার্যদিবসের মধ্যে ডেলিভার করা হবে</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'home' %}" 
+               class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-[oklch(0.696_0.17_162.48)] hover:bg-[oklch(0.596_0.17_162.48)] transition">
+                কেনাকাটা চালিয়ে যান
+            </a>
+            <a href="/user/orders" 
+               class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
+                আমার অর্ডারসমূহ দেখুন
+            </a>
+        </div>
+
+        <!-- Support Information -->
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-600">
+                সাহায্য প্রয়োজন? 
+                <a href="/contact" class="text-[oklch(0.696_0.17_162.48)] hover:text-[oklch(0.596_0.17_162.48)] font-medium">
+                    আমাদের সাপোর্ট টিমের সাথে যোগাযোগ করুন
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
