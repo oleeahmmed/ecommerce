@@ -7,10 +7,7 @@ from unfold.contrib.filters.admin import (
     RangeDateFilter,
     RangeDateTimeFilter,
     RangeNumericFilter,
-    SingleNumericFilter,
-    SliderNumericFilter,
 )
-from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
 from unfold.decorators import display
 from .models import (
     Category, Product, Cart, CartItem, Order, OrderItem, 
@@ -22,7 +19,7 @@ def dashboard_callback(request, context):
     """
     Callback to prepare extra context for the dashboard template.
     """
-    from django.db.models import Sum, Count, Q
+    from django.db.models import Sum, Count
     from django.utils import timezone
     from datetime import timedelta
     import json
@@ -37,6 +34,9 @@ def dashboard_callback(request, context):
     # Recent orders (last 7 days)
     week_ago = timezone.now() - timedelta(days=7)
     recent_orders = Order.objects.filter(created_at__gte=week_ago).count()
+    
+    # NEW: Unviewed orders count
+    new_orders = Order.objects.filter(is_viewed=False).count()
     
     # Low stock products
     low_stock_products = Product.objects.filter(stock__lte=10, is_active=True).count()
@@ -73,7 +73,6 @@ def dashboard_callback(request, context):
     order_status_data = []
     order_status_labels = []
     statuses = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
-    status_colors = ['#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#ef4444']
     
     for status in statuses:
         count = Order.objects.filter(status=status).count()
@@ -111,6 +110,7 @@ def dashboard_callback(request, context):
         "total_orders": total_orders,
         "total_revenue": total_revenue,
         "recent_orders": recent_orders,
+        "new_orders": new_orders,
         "low_stock_products": low_stock_products,
         "pending_orders": pending_orders,
         "top_products": top_products,
@@ -128,7 +128,7 @@ def dashboard_callback(request, context):
     })
     return context
 
-# Inline admins - Define these before the main admin classes that use them
+# Inline admins
 class CartItemInline(TabularInline):
     model = CartItem
     extra = 0
@@ -137,6 +137,23 @@ class OrderItemInline(TabularInline):
     model = OrderItem
     extra = 0
     readonly_fields = ['product', 'quantity', 'price']
+
+# Custom filter for new/unviewed orders
+class ViewedFilter(admin.SimpleListFilter):
+    title = 'View Status'
+    parameter_name = 'viewed'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('new', '🔴 নতুন অর্ডার (New Orders)'),
+            ('viewed', '✅ দেখা হয়েছে (Viewed)'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'new':
+            return queryset.filter(is_viewed=False)
+        if self.value() == 'viewed':
+            return queryset.filter(is_viewed=True)
 
 @admin.register(Category)
 class CategoryAdmin(ModelAdmin):
@@ -316,16 +333,56 @@ class CouponAdmin(ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(ModelAdmin):
-    list_display = ['order_number', 'customer_info', 'total_amount', 'status_display', 'created_at']
+    list_display = ['order_number', 'new_badge', 'customer_info', 'total_amount', 'status_display', 'created_at']
     list_filter = [
+        ViewedFilter,
         'status', 
         ('created_at', RangeDateTimeFilter),
         ('total_amount', RangeNumericFilter),
     ]
     search_fields = ['order_number', 'full_name', 'email', 'phone']
-    readonly_fields = ['order_number', 'created_at', 'updated_at']
+    readonly_fields = ['order_number', 'created_at', 'updated_at', 'is_viewed']
     date_hierarchy = 'created_at'
     inlines = [OrderItemInline]
+    actions = ['mark_as_viewed', 'mark_as_unviewed']
+    
+    fieldsets = (
+        ('Order Information', {
+            'fields': ('order_number', 'status', 'total_amount', 'is_viewed')
+        }),
+        ('Customer Information', {
+            'fields': ('full_name', 'email', 'phone', 'address', 'special_instructions')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        # Highlight new orders at the top
+        return qs.order_by('is_viewed', '-created_at')
+    
+    @admin.action(description='✅ Mark as viewed (দেখা হয়েছে মার্ক করুন)')
+    def mark_as_viewed(self, request, queryset):
+        updated = queryset.update(is_viewed=True)
+        self.message_user(request, f'{updated} টি অর্ডার দেখা হয়েছে মার্ক করা হয়েছে।')
+    
+    @admin.action(description='🔴 Mark as unviewed (নতুন মার্ক করুন)')
+    def mark_as_unviewed(self, request, queryset):
+        updated = queryset.update(is_viewed=False)
+        self.message_user(request, f'{updated} টি অর্ডার নতুন মার্ক করা হয়েছে।')
+    
+    @display(description="", label=False)
+    def new_badge(self, obj):
+        if not obj.is_viewed:
+            return format_html(
+                '<span style="background: #ef4444; color: white; padding: 4px 10px; '
+                'border-radius: 12px; font-size: 11px; font-weight: bold; '
+                'display: inline-block; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">নতুন</span>'
+            )
+        return ""
     
     @display(description="Customer", label=True)
     def customer_info(self, obj):
@@ -340,6 +397,7 @@ class OrderAdmin(ModelAdmin):
         colors = {
             'pending': '#f59e0b',
             'confirmed': '#3b82f6',
+            'processing': '#8b5cf6',
             'shipped': '#8b5cf6',
             'delivered': '#10b981',
             'cancelled': '#ef4444',
@@ -349,6 +407,17 @@ class OrderAdmin(ModelAdmin):
             '<span style="color: {}; font-weight: bold; text-transform: capitalize;">{}</span>',
             color, obj.status
         )
+    
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        # Mark as viewed when admin opens the order
+        try:
+            obj = Order.objects.get(pk=object_id)
+            if not obj.is_viewed:
+                obj.is_viewed = True
+                obj.save(update_fields=['is_viewed'])
+        except Order.DoesNotExist:
+            pass
+        return super().change_view(request, object_id, form_url, extra_context)
 
 @admin.register(SearchQuery)
 class SearchQueryAdmin(ModelAdmin):
@@ -386,7 +455,7 @@ class StoreSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
             'description': 'Social media profile links'
         }),
-        ('🔍 SEO Settings', {
+        ('📝 SEO Settings', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords'),
             'classes': ('collapse',),
             'description': 'Search engine optimization settings'
@@ -403,26 +472,21 @@ class StoreSettingsAdmin(ModelAdmin):
     )
     
     def has_add_permission(self, request):
-        # Only allow one instance
         return not StoreSettings.objects.exists()
     
     def has_delete_permission(self, request, obj=None):
-        # Don't allow deletion
         return False
     
     def changelist_view(self, request, extra_context=None):
-        # If no settings exist, redirect to add form
         if not StoreSettings.objects.exists():
             from django.shortcuts import redirect
             return redirect('admin:ecommerce_storesettings_add')
         
-        # If settings exist, redirect to change form
         settings = StoreSettings.objects.first()
         from django.shortcuts import redirect
         return redirect('admin:ecommerce_storesettings_change', settings.pk)
     
     def response_change(self, request, obj):
-        # After saving, stay on the same page instead of going to changelist
         from django.shortcuts import redirect
         if '_save' in request.POST:
             return redirect('admin:ecommerce_storesettings_change', obj.pk)

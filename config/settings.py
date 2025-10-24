@@ -243,8 +243,8 @@ UNFOLD = {
                         "title": _("Orders"),
                         "icon": "shopping_cart",
                         "link": reverse_lazy("admin:ecommerce_order_changelist"),
-                    },
-                    {
+                        "badge": "ecommerce.context_processors.get_new_orders_badge",
+                    },                                     {
                         "title": _("Customers"),
                         "icon": "people",
                         "link": reverse_lazy("admin:auth_user_changelist"),

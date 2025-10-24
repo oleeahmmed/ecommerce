@@ -172,6 +172,8 @@ class CartItem(models.Model):
             return self.product.discount_price * self.quantity
         return self.product.price * self.quantity
 
+# models.py তে Order class এর মধ্যে এই method যোগ করুন:
+
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -194,9 +196,22 @@ class Order(models.Model):
     phone = models.CharField(max_length=20)
     address = models.TextField()
     special_instructions = models.TextField(blank=True)
+
+    # NEW FIELD: Track if admin has viewed this order
+    is_viewed = models.BooleanField(default=False, verbose_name='Admin Viewed')
+    
+    class Meta:
+        ordering = ['-created_at']
     
     def __str__(self):
         return self.order_number
+    
+    # NEW METHOD: For badge count
+    @staticmethod
+    def get_new_orders_count(request):
+        """Return count of unviewed orders for sidebar badge"""
+        count = Order.objects.filter(is_viewed=False).count()
+        return count if count > 0 else None
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -387,3 +402,16 @@ class ContactMessage(models.Model):
     
     def __str__(self):
         return f"{self.name} - {self.subject}"
+
+
+# Order signals - models.py এর একদম শেষে যোগ করুন
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+@receiver(pre_save, sender=Order)
+def set_order_as_unviewed(sender, instance, **kwargs):
+    """
+    Ensure new orders are marked as unviewed
+    """
+    if not instance.pk:  # New order
+        instance.is_viewed = False        

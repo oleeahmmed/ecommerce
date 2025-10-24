@@ -1,6 +1,6 @@
 # context_processors.py
 from django.conf import settings
-from .models import Cart, Category, StoreSettings, SearchQuery, Promotion, SpecialOffer, Coupon
+from .models import Cart, Category, StoreSettings, SearchQuery, Promotion, SpecialOffer, Coupon, Order
 
 def cart_items(request):
     cart = None
@@ -90,3 +90,8 @@ def facebook_pixel(request):
         'FACEBOOK_PIXEL_ENABLED': getattr(settings, 'FACEBOOK_PIXEL_ENABLED', True),
         'FACEBOOK_PIXEL_DEBUG': getattr(settings, 'FACEBOOK_PIXEL_DEBUG', False),
     }
+
+def get_new_orders_badge(request):
+    """Return count of unviewed orders for sidebar badge"""
+    count = Order.objects.filter(is_viewed=False).count()
+    return count if count > 0 else None    
